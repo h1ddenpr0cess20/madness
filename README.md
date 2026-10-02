@@ -45,7 +45,8 @@ which runs from any folder or path.
 The controls follow the view: up always rolls the marble up the screen,
 however the board is turned.
 
-There are five races: Practice, Beginner, Intermediate, Aerial and Ultimate.
+There are eight races: Practice, Beginner, Intermediate, Twister, Aerial,
+Silly, Gauntlet and Ultimate.
 Each one adds its own time to whatever you had left. Losing the marble puts it
 back on the last safe ground it crossed while the clock keeps running, so a
 fall costs a couple of seconds and nothing more. The title screen lets you
@@ -60,8 +61,11 @@ What's out there:
 - **Acid slimes.** Green blobs that creep round set paths. Touch one and the
   marble is gone.
 - **Hammers.** They climb slowly, wait at the top, then slam down.
-- **Lifts.** They carry you across gaps and down shafts, and pause at each end
-  for you to get on or off.
+- **Lifts.** They carry you across gaps, down shafts and, in the Silly Race,
+  back up again. They pause at each end for you to get on or off.
+- **Chutes and bowls.** The Twister Race is a bobsleigh run of banked chutes
+  and bends. Bowls dip in the middle, and the Gauntlet's bowl is a sumo ring
+  full of steelies.
 
 ## How it's made
 
@@ -69,8 +73,8 @@ What's out there:
 |---|---|
 | `src/vendor/gfx/` | Alan's renderer, copied unchanged from `alan/src/client/vendor/gfx`: WebGPU where the browser has it, WebGL 2 where it doesn't (`?renderer=webgl` pins it), physically based shading, transmission and shadows. |
 | `src/marble.js` | Alan's glass (`createEye`), scaled down to a marble, with the 3D spark inside it. |
-| `src/course.js` | A course is a grid of tiles, each with four corner heights. That one structure gives flat ground, ramps, banks, half-pipes and bumps, with walls wherever neighbouring tiles differ. It builds both the mesh and the collision triangles. |
-| `src/levels.js` | The five races, written with `flat`, `slope`, `surface` and the hazards. |
+| `src/course.js` | A course is a grid of tiles, each with four corner heights. That one structure gives flat ground, ramps, banks, half-pipes, bowls and bumps, with walls wherever neighbouring tiles differ. It builds both the mesh and the collision triangles. |
+| `src/levels.js` | The eight races, written with `flat`, `slope`, `chute`, `bend`, `bowl`, `surface` and the hazards. |
 | `src/physics.js` | Sphere physics written for this game: gravity, the push from the controls, then contact resolution against the triangles and the moving boxes, nearest contact first so seams between tiles don't nudge the marble. |
 | `src/race.js` | One race with nothing drawn: the rules for losing the marble, reaching the goal and where it goes back to. The game draws it; the tests drive it. |
 | `src/view.js` | Where the camera sits round the marble — turned, tilted and zoomed within limits, eased toward wherever the player aims it — and which way on the ground is up and right on the screen. |

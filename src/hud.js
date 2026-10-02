@@ -5,7 +5,7 @@ import { RACES } from './levels.js';
  * score along the top, the big messages in the middle, the title screen.
  */
 
-const NAMES = ['Practice', 'Beginner', 'Intermediate', 'Aerial', 'Ultimate'];
+const NAMES = RACES.map((race) => race().name.replace(/ Race$/, ''));
 
 export function createHud(root, { onStart }) {
   const $ = (id) => root.querySelector(`#${id}`);

@@ -69,3 +69,22 @@ test('colours are linear', () => {
   assert.deepEqual(linearRGB('#000000'), [0, 0, 0]);
   assert.ok(Math.abs(linearRGB('#808080')[0] - 0.2158605) < 1e-6);
 });
+
+test('chutes, bends and bowls meet their neighbours level across the middle', () => {
+  const c = new Course({ name: 't', cols: 20, rows: 20, time: 0, palette });
+  c.chute(2, 2, 6, 3, 10, 8, 'x');
+  c.bend(8, 2, 3, 8, [8, 5]);
+  c.chute(8, 5, 3, 6, 8, 6, 'z');
+  c.bowl(7, 11, 5, 5, 6, 1.5);
+  const near = (a, b) => Math.abs(a - b) < 1e-2;
+  // Level across the middle tile, banked up toward the edges.
+  assert.ok(near(c.heightAt(5, 3.2), c.heightAt(5, 3.8)));
+  assert.ok(c.heightAt(5, 2.05) > c.heightAt(5, 3.5) + 0.5);
+  // Each joint is seamless: the same heights either side of it.
+  for (const z of [2.01, 2.5, 3.5, 4.5, 4.99]) assert.ok(near(c.heightAt(7.999, z), c.heightAt(8.001, z)), `chute into bend at ${z}`);
+  for (const x of [8.01, 8.5, 9.5, 10.5, 10.99]) assert.ok(near(c.heightAt(x, 4.999), c.heightAt(x, 5.001)), `bend into chute at ${x}`);
+  // The bowl: level with its rim all round, lowest in the middle.
+  for (const x of [7, 8.5, 11.99]) assert.ok(near(c.heightAt(x, 11), 6));
+  assert.ok(c.heightAt(9.5, 13.5) < c.heightAt(8.5, 12.5));
+  assert.ok(c.heightAt(8.5, 12.5) < 6);
+});
