@@ -3,6 +3,7 @@ import { buildCourse, DEPTH } from './course.js';
 import { loadRace } from './levels.js';
 import { RADIUS } from './marble.js';
 import { BREAK_SPEED, createBall, placeBall, stepBall } from './physics.js';
+import { groundAxes } from './view.js';
 
 /**
  * One race as it runs, without anything drawn or heard: the course, the
@@ -14,12 +15,11 @@ import { BREAK_SPEED, createBall, placeBall, stepBall } from './physics.js';
 /** The physics runs at a fixed rate, whatever the frame rate. */
 export const STEP = 1 / 120;
 
-/** Screen directions on the ground: right is +x −z, up is −x −z. */
-export const RIGHT = Object.freeze([Math.SQRT1_2, -Math.SQRT1_2]);
-export const UP = Object.freeze([-Math.SQRT1_2, -Math.SQRT1_2]);
-
-/** A push on the screen (x right, y up) as a push along the ground. */
-export const toGround = ({ x, y }) => [x * RIGHT[0] + y * UP[0], x * RIGHT[1] + y * UP[1]];
+/** A push on the screen (x right, y up) as a push along the ground, for a camera turned to `yaw`. */
+export function toGround({ x, y }, yaw) {
+  const { right, up } = groundAxes(yaw);
+  return [x * right[0] + y * up[0], x * right[1] + y * up[1]];
+}
 
 export function createRace(GFX, index, { ball = createBall({ r: RADIUS }) } = {}) {
   const course = loadRace(index);

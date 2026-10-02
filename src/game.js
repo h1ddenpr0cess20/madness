@@ -23,11 +23,12 @@ const BANNERS = {
   slimed: 'DISSOLVED!',
 };
 
-/** How close the camera comes for the title: near enough to see the spark in the glass. */
+/** How close the camera comes for the title: near enough to see the spark in the glass. And how fast it circles. */
 const TITLE_ZOOM = 0.42;
+const TITLE_TURN = 0.18;
 
 export function createGame({ stage, hud, input, audio, storage }) {
-  const { GFX, scene } = stage;
+  const { GFX, scene, view } = stage;
   const effects = createEffects(GFX, scene);
   const { marble: marbleMesh, spin: marbleSpin } = createMarble(GFX);
   scene.add(marbleMesh);
@@ -45,7 +46,8 @@ export function createGame({ stage, hud, input, audio, storage }) {
   let accumulator = 0;
   let lastTick = 0;
   let lostHow = null;
-  let zoom = 1;
+  /** The zoom the player last chose while racing; the title has its own. */
+  let playZoom = 1;
   let saved = storage.load();
 
   function setRace(index) {
@@ -80,7 +82,8 @@ export function createGame({ stage, hud, input, audio, storage }) {
     enter('title');
     paused = false;
     hud.paused(false);
-    stage.zoom = TITLE_ZOOM;
+    if (state !== 'title') playZoom = view.aim.zoom;
+    view.aim.zoom = TITLE_ZOOM;
     audio.stopMusic();
     hud.title(saved);
     hud.clock(null);
@@ -97,7 +100,7 @@ export function createGame({ stage, hud, input, audio, storage }) {
     clock += race.course.time;
     lastTick = 0;
     saved = storage.reached(index);
-    stage.zoom = zoom;
+    if (state === 'title') view.aim.zoom = playZoom;
     enter('ready');
     hud.play();
     hud.banner(race.course.name.toUpperCase(), 'big');
@@ -165,9 +168,23 @@ export function createGame({ stage, hud, input, audio, storage }) {
   }
 
   function update(dt, presses) {
+    // Read every frame, paused or not: the gamepad's buttons come in through it too.
+    const stick = input.stick();
+
+    // The view turns, tilts and zooms whatever else is going on, paused or not.
+    const look = input.view(dt);
+    view.turn(look.turn, look.tilt);
+    view.zoomBy(look.zoom);
+    if (state === 'title') view.aim.yaw += TITLE_TURN * dt;
+    else playZoom = view.aim.zoom;
+    view.step(dt);
+
     for (const p of presses) {
       if (p === 'mute') hud.muted(audio.toggleMute());
-      if (p === 'zoom' && state !== 'title') stage.zoom = zoom = zoom === 1 ? 0.6 : 1;
+      if (p === 'home') {
+        view.reset();
+        if (state === 'title') view.aim.zoom = TITLE_ZOOM;
+      }
       if (p === 'pause' && (state === 'play' || state === 'ready' || state === 'lost')) {
         paused = !paused;
         hud.paused(paused);
@@ -182,7 +199,7 @@ export function createGame({ stage, hud, input, audio, storage }) {
     }
 
     timer += dt;
-    const push = state === 'play' ? toGround(input.stick()) : [0, 0];
+    const push = state === 'play' ? toGround(stick, view.yaw) : [0, 0];
     accumulator = Math.min(accumulator + dt, STEP * 12);
     while (accumulator >= STEP) {
       accumulator -= STEP;
@@ -253,7 +270,7 @@ export function createGame({ stage, hud, input, audio, storage }) {
     const target = stage.target;
     if (debug.look) {
       target.set(...debug.look.at);
-      stage.zoom = debug.look.zoom;
+      view.zoom = view.aim.zoom = debug.look.zoom;
       return;
     }
     const ty = Math.max(b.y, race.course.lowest - 1);

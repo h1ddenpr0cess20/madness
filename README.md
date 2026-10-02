@@ -34,10 +34,16 @@ which runs from any folder or path.
 |---|---|
 | <kbd>←</kbd><kbd>↑</kbd><kbd>↓</kbd><kbd>→</kbd> or <kbd>WASD</kbd> | Roll. The courses run diagonally across the screen, so hold two at once. |
 | Hold the mouse or a finger | Roll toward the pointer. The further it is from the marble, the harder the push. |
-| Gamepad | Left stick or d-pad; <kbd>A</kbd> starts, <kbd>Start</kbd> pauses. |
-| <kbd>P</kbd> / <kbd>Esc</kbd> | Pause. |
-| <kbd>Z</kbd> | Zoom in closer to the marble, and back out. |
+| <kbd>Q</kbd> <kbd>E</kbd>, or drag with the right mouse button | Turn the board round the marble. Dragging up and down tilts it, from a skim across the tiles to nearly straight down. |
+| Mouse wheel, or <kbd>+</kbd> <kbd>−</kbd> | Zoom in and out. |
+| Two fingers | Pinch to zoom, twist to turn the board, drag up or down to tilt. |
+| <kbd>C</kbd> | Put the view back where it started. |
+| Gamepad | Left stick or d-pad rolls; right stick turns and tilts; shoulder buttons zoom; <kbd>A</kbd> starts, <kbd>Start</kbd> pauses. |
+| <kbd>P</kbd> / <kbd>Esc</kbd> | Pause. You can still turn and zoom to look around. |
 | <kbd>M</kbd> | Sound on or off. |
+
+The controls follow the view: up always rolls the marble up the screen,
+however the board is turned.
 
 There are five races: Practice, Beginner, Intermediate, Aerial and Ultimate.
 Each one adds its own time to whatever you had left. Losing the marble puts it
@@ -67,6 +73,7 @@ What's out there:
 | `src/levels.js` | The five races, written with `flat`, `slope`, `surface` and the hazards. |
 | `src/physics.js` | Sphere physics written for this game: gravity, the push from the controls, then contact resolution against the triangles and the moving boxes, nearest contact first so seams between tiles don't nudge the marble. |
 | `src/race.js` | One race with nothing drawn: the rules for losing the marble, reaching the goal and where it goes back to. The game draws it; the tests drive it. |
+| `src/view.js` | Where the camera sits round the marble — turned, tilted and zoomed within limits, eased toward wherever the player aims it — and which way on the ground is up and right on the screen. |
 | `src/audio.js` | Every sound, synthesised with Web Audio. |
 
 | Script | |

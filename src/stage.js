@@ -1,8 +1,9 @@
 /**
  * The screen, on Alan's engine (`vendor/gfx`): WebGPU where the browser has
  * it and WebGL 2 where it does not, the same physically based shading, glass
- * and shadows the eye is drawn with. A perspective camera from the isometric
- * corner — the arcade's view — that the game points wherever the marble is.
+ * and shadows the eye is drawn with. A perspective camera that starts at the
+ * isometric corner — the arcade's view — and can be turned, tilted and
+ * zoomed round wherever the marble is (`view.js`).
  *
  * The lighting is Alan's stage rig: a soft wash, a key light that casts the
  * shadows (here it follows the play), and a dim fill. What the glass, steel
@@ -13,9 +14,10 @@ import * as GFX from './vendor/gfx/index.js';
 import { Renderer } from './vendor/gfx/renderer.js';
 import { WebGLBackend } from './vendor/gfx/webgl.js';
 import { WebGPUBackend } from './vendor/gfx/webgpu.js';
+import { createView } from './view.js';
 
-/** Where the camera sits, from what it looks at: up and back at the isometric corner. */
-export const VIEW = Object.freeze({ direction: [1, 1.15, 1], distance: 12, fov: 36 });
+/** How far back the camera sits at zoom 1, and its lens. Where round the marble it is, is the view's (`view.js`). */
+export const LENS = Object.freeze({ distance: 12, fov: 36 });
 
 /** Where the key light comes from: high, behind the camera's left shoulder. */
 const KEY = new GFX.Vector3(-0.3, 1, 0.6).normalize();
@@ -102,7 +104,7 @@ export async function createStage(host) {
   host.appendChild(renderer.domElement);
 
   const scene = new GFX.Scene();
-  const camera = new GFX.PerspectiveCamera(VIEW.fov, 1, 0.5, 400);
+  const camera = new GFX.PerspectiveCamera(LENS.fov, 1, 0.3, 400);
 
   if (renderer.isWebGPU && preference !== 'webgpu') {
     renderer.backend.onLost = () => {
@@ -125,9 +127,16 @@ export async function createStage(host) {
   key.shadow.mapSize.set(2048, 2048);
   key.shadow.bias = -0.0003;
   key.shadow.normalBias = 0.02;
-  const span = 14;
-  Object.assign(key.shadow.camera, { left: -span, right: span, top: span, bottom: -span, near: 1, far: 100 });
-  key.shadow.camera.updateProjectionMatrix();
+  // The shadows cover what's in view: further out, a wider square.
+  let span = 0;
+  const shadowSpan = (zoom) => {
+    const want = Math.ceil(14 * Math.max(1, zoom));
+    if (want === span) return;
+    span = want;
+    Object.assign(key.shadow.camera, { left: -span, right: span, top: span, bottom: -span, near: 1, far: 100 + span * 2 });
+    key.shadow.camera.updateProjectionMatrix();
+  };
+  shadowSpan(1);
   scene.add(key, key.target);
   const fill = new GFX.DirectionalLight(0xfff4e6, 0.5);
   scene.add(fill, fill.target);
@@ -162,23 +171,25 @@ export async function createStage(host) {
 
   const stage = {
     GFX, renderer, scene, camera, key,
-    zoom: 1,
+    view: createView(),
     target: new GFX.Vector3(),
   };
 
-  const direction = new GFX.Vector3(...VIEW.direction).normalize();
+  const direction = new GFX.Vector3();
 
-  /** Point the camera and the lights at `stage.target`; called every frame. */
+  /** Point the camera and the lights at `stage.target`, from where the view is; called every frame. */
   stage.look = () => {
     const w = host.clientWidth || 1, h = host.clientHeight || 1;
     camera.aspect = w / h;
     // An upright phone sees as much course across as a wide screen does.
-    camera.fov = VIEW.fov * Math.max(1, Math.min(1.75, 0.8 * h / w));
+    camera.fov = LENS.fov * Math.max(1, Math.min(1.75, 0.8 * h / w));
     camera.updateProjectionMatrix();
-    camera.position.copy(stage.target).addScaledVector(direction, VIEW.distance * stage.zoom);
+    direction.set(...stage.view.direction());
+    camera.position.copy(stage.target).addScaledVector(direction, LENS.distance * stage.view.zoom);
+    shadowSpan(stage.view.zoom);
     camera.lookAt(stage.target);
     camera.updateMatrixWorld();
-    key.position.copy(stage.target).addScaledVector(KEY, 45);
+    key.position.copy(stage.target).addScaledVector(KEY, 45 + span);
     key.target.position.copy(stage.target);
     key.target.updateMatrixWorld();
     fill.position.copy(stage.target).add(new GFX.Vector3(6, 3, -5));

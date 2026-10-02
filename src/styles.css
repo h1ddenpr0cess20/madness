@@ -215,9 +215,13 @@ kbd {
 }
 #error[hidden] { display: none; }
 
+/* Say what the hands in use can do: keys and a mouse, or fingers. */
+@media (pointer: coarse) { .help .keys { display: none; } }
+@media (pointer: fine) { .help .touch { display: none; } }
+
 @media (max-width: 560px) {
   #clock { font-size: 36px; }
   #score { font-size: 17px; }
   #race { font-size: 10px; }
-  .help span:last-child { display: none; }
+  .help .keys { display: none; }
 }
