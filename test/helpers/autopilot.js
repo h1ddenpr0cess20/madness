@@ -144,12 +144,28 @@ export const ROUTES = [
   // Intermediate
   [p(6, 3.5, { speed: 3.5 }), p(16, 3.5, { speed: 3.5 }), p(21, 5.5, { speed: 3 }), p(21, 10, { speed: 3 }), p(21, 18, { speed: 3 }),
     p(21, 23, { speed: 3 }), p(21, 31, { speed: 3 }), p(22, 35), p(22, 39.5)],
+  // Twister
+  [p(6, 3.5, { speed: 3.5 }), p(15.5, 3.5, { speed: 4 }), p(17.1, 3.9, { speed: 3 }), p(17.5, 6, { speed: 3 }), p(17.5, 12.5, { speed: 4 }),
+    p(18, 14, { speed: 3 }), p(21.6, 14.5, { until: hammerUp(0), stop: true, speed: 3.5 }), p(26.5, 14.5, { speed: 5 }), p(28.1, 14.9, { speed: 3 }),
+    p(28.5, 17, { speed: 3 }), p(28.5, 23.5, { speed: 4 }), p(28.5, 26.5, { speed: 3 }), p(28.5, 30.5, { speed: 3 }), p(28.5, 35, { speed: 3 }),
+    p(28.5, 41.5)],
   // Aerial
   [p(6, 3, { speed: 3 }), p(7.2, 3, { until: hammerUp(0), stop: true }), p(10.2, 3, { speed: 5, until: hammerUp(1), stop: true }),
     p(13.5, 3, { speed: 5 }), p(18.4, 3.5, { until: liftAtEnd(0, 0), stop: true, speed: 3 }), p(1.5, 1.5, { on: 0, until: liftAtEnd(0, 1), stop: true, speed: 2.5 }),
     p(26.5, 3.5, { speed: 3 }), p(27, 6, { speed: 2.5 }), p(27, 14, { speed: 3 }), p(25.5, 17.4, { until: liftAtEnd(1, 0), stop: true, speed: 2.5 }),
     p(1.5, 1.5, { on: 1, until: liftAtEnd(1, 1), stop: true, speed: 2 }), p(25.5, 22.5, { speed: 2.5 }), p(25.5, 24.6, { speed: 2, stop: true }),
     p(25.5, 30.5, { speed: 2.2 }), p(23.5, 31, { speed: 3 }), p(23.5, 34, { speed: 3 }), p(23.5, 40, { speed: 3 }), p(23.5, 43.5)],
+  // Silly
+  [p(29.5, 32, { speed: 3 }), p(29.5, 22.5, { speed: 5 }), p(29.5, 19, { speed: 3 }), p(29.5, 17.6, { until: liftAtEnd(0, 0), stop: true, speed: 2.5 }),
+    p(1.5, 1.5, { on: 0, until: liftAtEnd(0, 1), stop: true, speed: 2 }), p(29.5, 12, { speed: 2.5 }), p(26, 11.5, { speed: 3 }), p(14, 11.5, { speed: 5 }),
+    p(11, 10.5, { speed: 3 }), p(10.4, 10.5, { until: liftAtEnd(1, 0), stop: true, speed: 2.5 }), p(1.5, 1.5, { on: 1, until: liftAtEnd(1, 1), stop: true, speed: 2 }),
+    p(1.5, 10.5, { speed: 2.5 }), p(1.5, 8, { speed: 3 }), p(1.5, 3.5, { speed: 5 }), p(1.9, 1.9, { speed: 3 }), p(4, 1.5, { speed: 3 }), p(11, 1.5), p(13.5, 1.5)],
+  // Gauntlet
+  [p(6, 3.5, { speed: 3 }), p(8.5, 3.5, { speed: 2.5 }), p(8.5, 2.5, { speed: 2 }), p(11.5, 2.5, { speed: 2.5 }), p(11.5, 3.5, { speed: 2 }),
+    p(15.5, 3.5, { speed: 2.5 }), p(15.5, 2.5, { speed: 2 }), p(18.5, 2.5, { speed: 3 }), p(24.3, 3, { until: hammerUp(0), stop: true, speed: 3 }),
+    p(27.2, 3, { until: hammerUp(1), stop: true, speed: 5 }), p(30.2, 3, { until: hammerUp(2), stop: true, speed: 5 }), p(34, 3, { speed: 5 }),
+    p(38, 6, { speed: 3 }), p(38, 12, { speed: 3 }), p(37, 14, { speed: 3 }), p(36.5, 21.5, { speed: 3.5 }), p(36.5, 26.5, { speed: 2.5, radius: 0.3 }),
+    p(40.5, 26.5, { speed: 2.5 }), p(40.5, 32.5, { speed: 2.5 }), p(40.5, 34, { speed: 3 }), p(39, 39, { speed: 3 }), p(39, 44)],
   // Ultimate
   [p(6, 3, { speed: 3 }), p(14, 3, { speed: 3 }), p(17, 6, { speed: 3 }), p(17, 9.8, { until: hammerUp(0), stop: true, speed: 3 }),
     p(17, 13.8, { until: hammerUp(1), stop: true, speed: 5 }), p(17, 19.5, { speed: 4 }), p(20.3, 21, { until: liftAtEnd(0, 0), stop: true, speed: 3 }),

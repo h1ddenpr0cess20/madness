@@ -2,14 +2,18 @@ import { Course } from './course.js';
 
 /**
  * The races, in order. Each is a course that starts at the back, high up,
- * and works its way down toward the camera to a chequered goal. The time
- * each one gives is added to whatever is left over from the last.
+ * and works its way down toward the camera to a chequered goal — except the
+ * Silly Race, which runs the other way, uphill. The time each one gives is
+ * added to whatever is left over from the last.
  */
 
 const PRACTICE = { tiles: ['#6f9be0', '#4a78c8', '#a8c4f0'], walls: ['#22407a', '#1b3468', '#2c4f8c'] };
 const BEGINNER = { tiles: ['#6cc77a', '#e8c95a', '#9bdc8a'], walls: ['#1f6a3c', '#8a6a1a', '#2a7a48'] };
 const INTERMEDIATE = { tiles: ['#f0a85a', '#e07a50', '#f5cc8a'], walls: ['#8a4018', '#7a2c1e', '#9a5426'] };
 const AERIAL = { tiles: ['#a68af0', '#62c0f0', '#c8b8fa'], walls: ['#4a34a0', '#1f6a9c', '#5c46b0'] };
+const TWISTER = { tiles: ['#5fd0c0', '#3a9ec8', '#a8eadc'], walls: ['#1a6a62', '#1a4a7a', '#2a7e72'] };
+const SILLY = { tiles: ['#f5e070', '#f08cc8', '#8ae0f0'], walls: ['#8a7a1a', '#8a2a6a', '#1f6a7a'] };
+const GAUNTLET = { tiles: ['#c0c4cc', '#e05a4a', '#8a92a0'], walls: ['#4a4e58', '#7a1e1a', '#363a44'] };
 const ULTIMATE = { tiles: ['#f07888', '#f0b060', '#b08af0', '#80c8f0'], walls: ['#8a2a40', '#9a5a1e', '#5a3aa0', '#2a6a90'] };
 
 function practice() {
@@ -84,6 +88,30 @@ function intermediate() {
   return c;
 }
 
+function twister() {
+  const c = new Course({ name: 'Twister Race', cols: 36, rows: 46, time: 40, palette: TWISTER });
+  c.start = { x: 3, z: 3 };
+  c.flat(1, 1, 5, 5, 20);
+  // A bobsleigh run: banked chutes zig-zagging down, a banked bend at every turn.
+  c.chute(6, 2, 10, 3, 20, 17, 'x', { color: 1 });
+  c.bend(16, 2, 3, 17, [16, 5], { color: 2 });
+  c.chute(16, 5, 3, 8, 17, 14, 'z', { color: 1 });
+  c.bend(16, 13, 3, 14, [19, 13], { color: 2 });
+  c.chute(19, 13, 8, 3, 14, 11, 'x', { color: 1 });
+  c.hammer(23, 14, { period: 2.3 });
+  c.bend(27, 13, 3, 11, [27, 16], { color: 2 });
+  c.chute(27, 16, 3, 7, 11, 8, 'z', { color: 1 });
+  // Out into a yard, and across the bowl with a slime going round in it.
+  c.flat(25, 23, 7, 4, 8);
+  c.steelie(30, 25, { range: 5 });
+  c.bowl(25, 27, 7, 7, 8, 1.6, { color: 2 });
+  c.slime([[26, 28], [30, 28], [30, 32], [26, 32]], { speed: 1.3 });
+  c.flat(26, 34, 5, 2, 8);
+  c.slope(27, 36, 3, 4, 8, 5, 'z', { color: 1 });
+  c.goal(25, 40, 7, 3, 5);
+  return c;
+}
+
 function aerial() {
   const c = new Course({ name: 'Aerial Race', cols: 34, rows: 46, time: 50, palette: AERIAL });
   c.start = { x: 3, z: 3 };
@@ -108,6 +136,63 @@ function aerial() {
   c.slope(22, 34, 3, 6, 8, 4, 'z', { color: 1 });
   c.flat(20, 40, 8, 2, 4);
   c.goal(20, 42, 8, 3, 4);
+  return c;
+}
+
+function silly() {
+  // Backwards and uphill: it starts down at the front and climbs away to a goal at the top.
+  const c = new Course({ name: 'Silly Race', cols: 36, rows: 40, time: 50, palette: SILLY });
+  c.start = { x: 30, z: 34 };
+  c.flat(27, 32, 6, 5, 2);
+  c.chute(28, 22, 3, 10, 6, 2, 'z', { color: 1 });
+  c.flat(26, 17, 7, 5, 6);
+  c.steelie(31, 18, { range: 5 });
+  // Up the shaft.
+  c.lift(28, 14, 3, 3, 6, { to: [0, 4, 0], period: 6 });
+  c.flat(26, 9, 7, 5, 10);
+  // Rollers, climbing.
+  c.surface(14, 10, 12, 3, (X) => 10 + (26 - X) * 0.25 + 0.35 * Math.sin(Math.PI * (26 - X) / 3), { color: 2 });
+  c.flat(10, 7, 4, 8, 13);
+  c.slime([[10, 7], [12, 7], [12, 13], [10, 13]], { speed: 1.2 });
+  // Up and across.
+  c.lift(7, 9, 3, 3, 13, { to: [-4, 3, 0], period: 7 });
+  c.flat(0, 8, 3, 7, 16);
+  c.chute(0, 3, 3, 5, 18, 16, 'z', { color: 1 });
+  c.bend(0, 0, 3, 18, [3, 3], { color: 2 });
+  c.flat(3, 0, 9, 3, 18);
+  c.steelie(8, 1, { range: 6 });
+  c.goal(12, 0, 4, 3, 18);
+  return c;
+}
+
+function gauntlet() {
+  const c = new Course({ name: 'Gauntlet Race', cols: 44, rows: 48, time: 50, palette: GAUNTLET });
+  c.start = { x: 3, z: 3 };
+  c.flat(1, 1, 5, 5, 22);
+  // A ramp with holes in it.
+  c.slope(6, 0, 12, 7, 22, 17, 'x', { color: 2 });
+  for (const [x, z] of [[8, 1], [8, 5], [9, 3], [11, 0], [11, 4], [12, 2], [13, 6], [14, 4], [15, 1], [16, 3], [16, 6]]) c.clear(x, z, 1, 1);
+  c.flat(18, 0, 6, 7, 17);
+  // The hammer walk.
+  c.flat(24, 2, 11, 2, 17, { color: 1 });
+  c.hammer(25, 2, { d: 2, period: 2.4 });
+  c.hammer(28, 2, { d: 2, period: 2.4, phase: 0.6 });
+  c.hammer(31, 2, { d: 2, period: 2.4, phase: 1.2 });
+  c.flat(35, 0, 6, 7, 17);
+  c.slope(36, 7, 4, 5, 17, 13, 'z', { color: 1 });
+  // The sumo ring: a dish with steelies in it.
+  c.bowl(32, 12, 10, 10, 13, 1.6, { color: 2 });
+  c.steelie(34, 15, { range: 7 }).steelie(39, 15, { range: 7 }).steelie(36, 19, { range: 7 });
+  // A bridge one tile wide, zig-zagging down.
+  c.flat(36, 22, 1, 4, 13, { color: 1 });
+  c.flat(36, 26, 5, 1, 13, { color: 1 });
+  c.slope(40, 27, 1, 6, 13, 10, 'z', { color: 1 });
+  // Slimes crossing the last yard.
+  c.flat(35, 33, 8, 6, 10);
+  c.slime([[36, 35], [41, 35]], { speed: 2 });
+  c.slime([[41, 37], [36, 37]], { speed: 1.7 });
+  c.slope(37, 39, 4, 4, 10, 7, 'z', { color: 1 });
+  c.goal(35, 43, 8, 3, 7);
   return c;
 }
 
@@ -147,7 +232,7 @@ function ultimate() {
   return c;
 }
 
-export const RACES = [practice, beginner, intermediate, aerial, ultimate];
+export const RACES = [practice, beginner, intermediate, twister, aerial, silly, gauntlet, ultimate];
 
 export function loadRace(index) {
   return RACES[index]();

@@ -63,6 +63,32 @@ export class Course {
     return this.surface(x, z, w, d, (X, Z) => from + (to - from) * along(X, Z), opts);
   }
 
+  /**
+   * A ramp with its sides banked up by `bank`, like a bobsleigh run: level
+   * across the middle third, curving up toward both edges.
+   */
+  chute(x, z, w, d, from, to, axis, { bank = 0.9, ...opts } = {}) {
+    const along = axis === 'x' ? (X) => (X - x) / w : (X, Z) => (Z - z) / d;
+    const across = axis === 'x' ? (X, Z) => (Z - z) / d : (X) => (X - x) / w;
+    return this.surface(x, z, w, d, (X, Z) => from + (to - from) * along(X, Z) + banked(across(X, Z), bank), opts);
+  }
+
+  /**
+   * A banked corner joining two chutes, `size` tiles square at height `h`,
+   * curving round its inner corner `pivot` ([X, Z], one of the square's corners).
+   */
+  bend(x, z, size, h, pivot, { bank = 0.9, ...opts } = {}) {
+    return this.surface(x, z, size, size, (X, Z) => h + banked(Math.hypot(X - pivot[0], Z - pivot[1]) / size, bank), opts);
+  }
+
+  /** A shallow dish, `depth` deep in the middle, level with `h` all round its rim. */
+  bowl(x, z, w, d, h, depth, opts) {
+    return this.surface(x, z, w, d, (X, Z) => {
+      const u = (2 * (X - x)) / w - 1, v = (2 * (Z - z)) / d - 1;
+      return h - depth * (1 - u * u) * (1 - v * v);
+    }, opts);
+  }
+
   clear(x, z, w, d) {
     for (let j = z; j < z + d; j++) for (let i = x; i < x + w; i++) this.cells[j * this.cols + i] = null;
     return this;
@@ -142,6 +168,12 @@ export class Course {
 }
 
 const isFlat = (c) => c.h.every((v) => Math.abs(v - c.h[0]) < 1e-6);
+
+/** How far up the bank is `u` of the way across a chute: nothing over the middle third, `bank` at the edges. */
+function banked(u, bank) {
+  const k = Math.max(0, Math.abs(2 * u - 1) * 1.5 - 0.5);
+  return bank * Math.min(k * k, 1.8);
+}
 
 /** sRGB hex to linear RGB — vertex colours are linear. */
 export function linearRGB(hex) {
