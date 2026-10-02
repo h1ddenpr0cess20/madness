@@ -1,6 +1,6 @@
 /**
- * The course as it is drawn: tiles with grid lines, walls that fall away into
- * the dark, a banner over the goal.
+ * The course as it is drawn: bevelled glossy tiles, walls that fall away
+ * into the dark, a gate over the goal.
  */
 
 const textures = new Map();
@@ -90,9 +90,11 @@ export function createCourseMeshes(GFX, built) {
   return group;
 }
 
-/** "GOAL" on a banner over the finish, as the arcade had it. */
-export function createGoalBanner(GFX, course) {
-  if (typeof document === 'undefined') return null;
+/**
+ * The finish gate: two posts and a crossbar with GOAL on it, standing across
+ * the side of the chequered goal the course comes in from.
+ */
+export function createGoalGate(GFX, course) {
   let x0 = Infinity, x1 = -Infinity, z0 = Infinity, z1 = -Infinity, y = -Infinity;
   for (let z = 0; z < course.rows; z++) {
     for (let x = 0; x < course.cols; x++) {
@@ -104,23 +106,77 @@ export function createGoalBanner(GFX, course) {
     }
   }
   if (!Number.isFinite(y)) return null;
+
+  // Which side the course comes in from: the one with the most course next to it.
+  const count = (cells) => cells.filter(([x, z]) => {
+    const c = course.cell(x, z);
+    return c && c.kind !== 'goal';
+  }).length;
+  const span = (a, b, f) => Array.from({ length: b - a }, (_, i) => f(a + i));
+  const sides = [
+    { n: count(span(x0, x1, (x) => [x, z0 - 1])), along: 'x', at: z0 },
+    { n: count(span(x0, x1, (x) => [x, z1])), along: 'x', at: z1 },
+    { n: count(span(z0, z1, (z) => [x0 - 1, z])), along: 'z', at: x0 },
+    { n: count(span(z0, z1, (z) => [x1, z])), along: 'z', at: x1 },
+  ].sort((a, b) => b.n - a.n);
+  const side = sides[0];
+  const [from, to] = side.along === 'x' ? [x0, x1] : [z0, z1];
+  const width = to - from;
+  const height = 2.3;
+
+  const gate = new GFX.Group();
+  gate.name = 'goal-gate';
+  const steel = new GFX.MeshPhysicalMaterial({ name: 'gate', color: new GFX.Color('#e8e4dc'), metalness: 0.9, roughness: 0.18, clearcoat: 0.6 });
+  const glow = new GFX.MeshStandardMaterial({ name: 'gate-light', color: new GFX.Color('#d97757'), emissive: new GFX.Color('#d97757'), emissiveIntensity: 1.4 });
+
+  const sign = goalSign(GFX, width);
+  const face = new GFX.MeshStandardMaterial({ name: 'goal-sign', color: new GFX.Color('#ffffff'), map: sign, roughness: 0.45, emissive: new GFX.Color('#ffffff'), emissiveIntensity: 0.15 });
+  const board = new GFX.MeshStandardMaterial({ name: 'goal-board', color: new GFX.Color('#d97757'), roughness: 0.45 });
+  const bar = side.along === 'x'
+    ? new GFX.Mesh(new GFX.BoxGeometry(width, 0.55, 0.16), [board, board, board, board, face, face])
+    : new GFX.Mesh(new GFX.BoxGeometry(0.16, 0.55, width), [face, face, board, board, board, board]);
+  const place = (mesh, a, up, b = side.at) => {
+    if (side.along === 'x') mesh.position.set(a, up, b);
+    else mesh.position.set(b, up, a);
+  };
+  place(bar, from + width / 2, y + height);
+  gate.add(bar);
+  for (const a of [from + 0.12, to - 0.12]) {
+    const post = new GFX.Mesh(new GFX.CylinderGeometry(0.07, 0.09, height + 0.3, 20), steel);
+    place(post, a, y + (height + 0.3) / 2);
+    const lamp = new GFX.Mesh(new GFX.SphereGeometry(0.13, 20, 14), glow);
+    place(lamp, a, y + height + 0.42);
+    gate.add(post, lamp);
+  }
+  gate.traverse((o) => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; } });
+  return gate;
+}
+
+/** The sign on the gate: GOAL between chequered ends, sized to the bar. */
+function goalSign(GFX, width) {
+  if (typeof document === 'undefined') return null;
+  const h = 128, w = Math.round(h * width / 0.55);
   const c = document.createElement('canvas');
-  c.width = 512; c.height = 160;
+  c.width = w; c.height = h;
   const ctx = c.getContext('2d');
-  ctx.fillStyle = '#d97757';
-  ctx.fillRect(0, 0, 512, 160);
   ctx.fillStyle = '#f4f1ea';
-  ctx.fillRect(10, 10, 492, 140);
+  ctx.fillRect(0, 0, w, h);
+  const sq = h / 4;
+  for (const x0 of [0, w - sq * 3]) {
+    for (let i = 0; i < 3; i++) {
+      for (let j = 0; j < 4; j++) {
+        ctx.fillStyle = (i + j) % 2 ? '#f4f1ea' : '#1c1b1a';
+        ctx.fillRect(x0 + i * sq, j * sq, sq, sq);
+      }
+    }
+  }
   ctx.fillStyle = '#1c1b1a';
-  ctx.font = '900 112px ui-monospace, "SF Mono", Menlo, Consolas, monospace';
+  ctx.font = `800 ${Math.round(h * 0.72)}px ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif`;
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.fillText('GOAL', 256, 86);
-  const texture = new GFX.CanvasTexture(c);
-  texture.colorSpace = GFX.SRGBColorSpace;
-  const sprite = new GFX.Sprite(new GFX.SpriteMaterial({ map: texture, transparent: false }));
-  sprite.scale.set(3.2, 1, 1);
-  sprite.position.set((x0 + x1) / 2, y + 2.2, (z0 + z1) / 2);
-  sprite.name = 'goal-banner';
-  return sprite;
+  ctx.fillText('GOAL', w / 2, h * 0.54);
+  const t = new GFX.CanvasTexture(c);
+  t.colorSpace = GFX.SRGBColorSpace;
+  t.anisotropy = 8;
+  return t;
 }

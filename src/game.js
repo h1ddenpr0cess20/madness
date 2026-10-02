@@ -3,7 +3,7 @@ import { RACES } from './levels.js';
 import { createMarble } from './marble.js';
 import { rollSpin, turn } from './physics.js';
 import { createRace, putBack, STEP, stepRace, toGround } from './race.js';
-import { createCourseMeshes, createGoalBanner } from './scenery.js';
+import { createCourseMeshes, createGoalGate } from './scenery.js';
 
 /**
  * The game: races one after another against one clock. Whatever time is left
@@ -53,8 +53,8 @@ export function createGame({ stage, hud, input, audio, storage }) {
     race = createRace(GFX, index, race ? { ball: race.ball } : {});
     group = new GFX.Group();
     group.add(createCourseMeshes(GFX, race.built));
-    const banner = createGoalBanner(GFX, race.course);
-    if (banner) group.add(banner);
+    const gate = createGoalGate(GFX, race.course);
+    if (gate) group.add(gate);
     group.add(race.actors.group);
     scene.add(group);
     effects.setCourse(race.course);
