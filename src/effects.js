@@ -31,9 +31,9 @@ export function createEffects(GFX, scene) {
     clearcoat: 0.5, specularIntensity: 1, side: GFX.DoubleSide,
   });
   const shard = shardGeometry(GFX);
-  const sparkGeometry = createSparkGeometry(GFX, RADIUS * 0.8);
+  const sparkGeometry = createSparkGeometry(GFX, RADIUS * 0.82);
   const sparkMaterial = new GFX.MeshStandardMaterial({
-    name: 'spark-bit', color: new GFX.Color(SPARK.color), emissive: new GFX.Color(SPARK.glow), emissiveIntensity: 0.35, roughness: 0.45,
+    name: 'spark-bit', color: new GFX.Color('#ffffff'), vertexColors: true, emissive: new GFX.Color(SPARK.glow), emissiveIntensity: 0.22, roughness: 0.38,
   });
   const bubble = new GFX.SphereGeometry(0.07, 12, 8);
   const acid = new GFX.MeshStandardMaterial({ name: 'bubble', color: new GFX.Color('#8dff52'), emissive: new GFX.Color('#2fa000'), emissiveIntensity: 0.8, roughness: 0.2 });
