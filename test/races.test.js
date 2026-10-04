@@ -3,7 +3,7 @@ import { test } from 'node:test';
 
 import { FALL_LIMIT } from '../src/physics.js';
 import { loadRace, RACES } from '../src/levels.js';
-import { drive, ROUTES } from './helpers/autopilot.js';
+import { ALTERNATES, drive, ROUTES } from './helpers/autopilot.js';
 
 /**
  * Which tiles can be rolled to from the start without a lift: across to a
@@ -86,4 +86,13 @@ for (const [i, race] of RACES.entries()) {
     assert.ok(result.time < loadRace(i).time * 0.75, `took ${result.time.toFixed(1)}s of ${loadRace(i).time}`);
     assert.equal(result.losses.length, 0, JSON.stringify(result.losses));
   });
+
+  for (const [k, route] of (ALTERNATES[course.name] ?? []).entries()) {
+    test(`${course.name}: the other way round (${k + 1}) finishes too`, () => {
+      const result = drive(i, route);
+      assert.ok(result.finished, `stuck: ${JSON.stringify(result)}`);
+      assert.ok(result.time < course.time * 0.75, `took ${result.time.toFixed(1)}s of ${course.time}`);
+      assert.equal(result.losses.length, 0, JSON.stringify(result.losses));
+    });
+  }
 }
