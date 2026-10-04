@@ -132,6 +132,24 @@ export function drive(index, route, { limit = 200 } = {}) {
 
 const p = (x, z, more) => ({ at: [x, z], ...more });
 
+/** Other ways round the races that split, by name. */
+export const ALTERNATES = {
+  'Crossroads Race': [
+    // The long way, and round by the side ramp.
+    [p(6, 3.5, { speed: 3 }), p(12.5, 3.5, { speed: 3 }), p(26, 3.5, { speed: 4 }), p(26.5, 6, { speed: 3 }), p(26.5, 12, { speed: 3 }),
+      p(27, 15, { speed: 3 }), p(27.5, 18, { speed: 3 }), p(27.5, 26.5, { speed: 3 }), p(33.5, 28.5, { speed: 3 }), p(33.5, 31, { speed: 3 }),
+      p(33.5, 40.5, { speed: 3 }), p(32, 42.5, { speed: 3 }), p(24.5, 42.5, { speed: 3 }), p(24.5, 45.5)],
+  ],
+  'Odyssey Race': [
+    // The long way round, the bobsleigh run, the long way down.
+    [p(6, 3.5, { speed: 3 }), p(12.5, 3.5, { speed: 3 }), p(12.5, 7, { speed: 3 }), p(12.5, 14.5, { speed: 3 }), p(29.5, 14.5, { speed: 4 }),
+      p(30.5, 13, { speed: 3 }), p(30.5, 6.5, { speed: 3 }), p(31.5, 3.5, { speed: 3 }), p(36, 3.5, { speed: 3 }), p(47.5, 3.5, { speed: 4 }),
+      p(49.1, 3.9, { speed: 3 }), p(49.5, 6, { speed: 3 }), p(49.5, 14.5, { speed: 4 }), p(46, 16.5, { speed: 3 }), p(42.5, 18.5, { speed: 3 }),
+      p(42.5, 24.5, { speed: 3 }), p(43.5, 30.5, { speed: 3 }), p(43.5, 38.5, { speed: 3 }), p(42, 40.5, { speed: 3 }), p(39, 40.5, { speed: 3 }),
+      p(28.5, 40.5, { speed: 3 }), p(25, 41.5, { speed: 3 }), p(24, 46), p(24, 51)],
+  ],
+};
+
 /** The way round each race. */
 export const ROUTES = [
   // Practice
@@ -144,6 +162,11 @@ export const ROUTES = [
   // Intermediate
   [p(6, 3.5, { speed: 3.5 }), p(16, 3.5, { speed: 3.5 }), p(21, 5.5, { speed: 3 }), p(21, 10, { speed: 3 }), p(21, 18, { speed: 3 }),
     p(21, 23, { speed: 3 }), p(21, 31, { speed: 3 }), p(22, 35), p(22, 39.5)],
+  // Crossroads: the short way, and over on the lift.
+  [p(6, 3.5, { speed: 3 }), p(12.5, 3.5, { speed: 3 }), p(13, 6.5, { speed: 2.5 }), p(13, 14.5, { speed: 3 }), p(13, 16.5, { speed: 2.5 }),
+    p(12.5, 19.5, { speed: 2.5 }), p(12.5, 21.6, { until: hammerUp(0), stop: true, speed: 2.5 }), p(12.5, 26.5, { speed: 3 }),
+    p(19.5, 31.4, { until: liftAtEnd(0, 0), stop: true, speed: 2.5 }), p(1.5, 1.5, { on: 0, until: liftAtEnd(0, 1), stop: true, speed: 2 }),
+    p(19.5, 39.5, { speed: 2.5 }), p(19.5, 45.5)],
   // Twister
   [p(6, 3.5, { speed: 3.5 }), p(15.5, 3.5, { speed: 4 }), p(17.1, 3.9, { speed: 3 }), p(17.5, 6, { speed: 3 }), p(17.5, 12.5, { speed: 4 }),
     p(18, 14, { speed: 3 }), p(21.6, 14.5, { until: hammerUp(0), stop: true, speed: 3.5 }), p(26.5, 14.5, { speed: 5 }), p(28.1, 14.9, { speed: 3 }),
@@ -160,12 +183,27 @@ export const ROUTES = [
     p(1.5, 1.5, { on: 0, until: liftAtEnd(0, 1), stop: true, speed: 2 }), p(29.5, 12, { speed: 2.5 }), p(26, 11.5, { speed: 3 }), p(14, 11.5, { speed: 5 }),
     p(11, 10.5, { speed: 3 }), p(10.4, 10.5, { until: liftAtEnd(1, 0), stop: true, speed: 2.5 }), p(1.5, 1.5, { on: 1, until: liftAtEnd(1, 1), stop: true, speed: 2 }),
     p(1.5, 10.5, { speed: 2.5 }), p(1.5, 8, { speed: 3 }), p(1.5, 3.5, { speed: 5 }), p(1.9, 1.9, { speed: 3 }), p(4, 1.5, { speed: 3 }), p(11, 1.5), p(13.5, 1.5)],
+  // Marathon
+  [p(6, 3.5, { speed: 3 }), p(18, 3.5, { speed: 4 }), p(20.5, 4.5, { speed: 3 }), p(20.5, 6.5, { speed: 3 }), p(20.5, 13.5, { speed: 4 }),
+    p(21.1, 14.9, { speed: 3 }), p(23, 15.5, { speed: 3 }), p(29.5, 15.5, { speed: 4 }), p(31.1, 15.9, { speed: 3 }), p(31.5, 18, { speed: 3 }),
+    p(31.5, 24.5, { speed: 4 }), p(31.5, 27, { speed: 3 }), p(31.5, 37.5, { speed: 3 }), p(30, 38), p(20, 38, { speed: 4 }), p(18, 38, { speed: 3 }),
+    p(17.5, 40.4, { until: liftAtEnd(0, 0), stop: true, speed: 2.5 }), p(1.5, 1.5, { on: 0, until: liftAtEnd(0, 1), stop: true, speed: 2 }),
+    p(17.5, 45.5, { speed: 2.5 }), p(21.5, 46, { speed: 3 }), p(23.2, 46, { until: hammerUp(0), stop: true, speed: 3 }),
+    p(27.2, 46, { until: hammerUp(1), stop: true, speed: 5 }), p(31, 46, { speed: 5 }), p(34.5, 47, { speed: 3 }), p(35, 49, { speed: 3 }),
+    p(35, 57, { speed: 3.5 }), p(36, 58.5, { speed: 3 }), p(44, 58.5), p(47, 58.5)],
   // Gauntlet
   [p(6, 3.5, { speed: 3 }), p(8.5, 3.5, { speed: 2.5 }), p(8.5, 2.5, { speed: 2 }), p(11.5, 2.5, { speed: 2.5 }), p(11.5, 3.5, { speed: 2 }),
     p(15.5, 3.5, { speed: 2.5 }), p(15.5, 2.5, { speed: 2 }), p(18.5, 2.5, { speed: 3 }), p(24.3, 3, { until: hammerUp(0), stop: true, speed: 3 }),
     p(27.2, 3, { until: hammerUp(1), stop: true, speed: 5 }), p(30.2, 3, { until: hammerUp(2), stop: true, speed: 5 }), p(34, 3, { speed: 5 }),
     p(38, 6, { speed: 3 }), p(38, 12, { speed: 3 }), p(37, 14, { speed: 3 }), p(36.5, 21.5, { speed: 3.5 }), p(36.5, 26.5, { speed: 2.5, radius: 0.3 }),
     p(40.5, 26.5, { speed: 2.5 }), p(40.5, 32.5, { speed: 2.5 }), p(40.5, 34, { speed: 3 }), p(39, 39, { speed: 3 }), p(39, 44)],
+  // Odyssey: over the holes, down the shaft, down the steps.
+  [p(6, 3.5, { speed: 3 }), p(15, 3.5, { speed: 3 }), p(20.5, 3.5, { speed: 2.5 }), p(20.5, 2.5, { speed: 2 }), p(23.5, 2.5, { speed: 2.5 }),
+    p(23.5, 3.5, { speed: 2 }), p(28.5, 3.5, { speed: 3 }),
+    p(36, 3.5, { speed: 3 }), p(41.5, 5, { speed: 3 }), p(41.5, 6.4, { until: liftAtEnd(0, 0), stop: true, speed: 2.5 }),
+    p(1.5, 1.5, { on: 0, until: liftAtEnd(0, 1), stop: true, speed: 2 }), p(41.5, 12, { speed: 2.5 }), p(42.5, 18.5, { speed: 3 }),
+    p(42.5, 24.5, { speed: 3 }), p(40, 27.5, { speed: 3 }), p(36.5, 27.5, { speed: 2.5 }), p(32.2, 27.5, { until: hammerUp(0), stop: true, speed: 2.5 }),
+    p(26, 27.5, { speed: 4 }), p(25.5, 29, { speed: 3 }), p(25.5, 37.5, { speed: 3 }), p(24, 42, { speed: 3 }), p(24, 46), p(24, 51)],
   // Ultimate
   [p(6, 3, { speed: 3 }), p(14, 3, { speed: 3 }), p(17, 6, { speed: 3 }), p(17, 9.8, { until: hammerUp(0), stop: true, speed: 3 }),
     p(17, 13.8, { until: hammerUp(1), stop: true, speed: 5 }), p(17, 19.5, { speed: 4 }), p(20.3, 21, { until: liftAtEnd(0, 0), stop: true, speed: 3 }),
