@@ -1,4 +1,5 @@
-import { World } from './physics.js';
+import { linearRGB } from 'madness-engine/color';
+import { World } from 'madness-engine/physics';
 
 /**
  * A course is a grid of tiles, each with its own four corner heights — so a
@@ -175,14 +176,8 @@ function banked(u, bank) {
   return bank * Math.min(k * k, 1.8);
 }
 
-/** sRGB hex to linear RGB — vertex colours are linear. */
-export function linearRGB(hex) {
-  const n = parseInt(hex.slice(1), 16);
-  return [(n >> 16) & 255, (n >> 8) & 255, n & 255].map((v) => {
-    const c = v / 255;
-    return c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
-  });
-}
+/** sRGB hex to linear RGB — vertex colours are linear. The engine's. */
+export { linearRGB };
 
 /**
  * Everything drawn and everything collided with, from the tiles: the tops

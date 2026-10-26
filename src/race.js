@@ -1,9 +1,9 @@
+import { RADIUS } from 'madness-engine/heroes/marble';
+import { BREAK_SPEED, createBall, placeBall, stepBall } from 'madness-engine/physics';
+
 import { createActors } from './actors.js';
 import { buildCourse, DEPTH } from './course.js';
 import { loadRace } from './levels.js';
-import { RADIUS } from './marble.js';
-import { BREAK_SPEED, createBall, placeBall, stepBall } from './physics.js';
-import { groundAxes } from './view.js';
 
 /**
  * One race as it runs, without anything drawn or heard: the course, the
@@ -16,10 +16,7 @@ import { groundAxes } from './view.js';
 export const STEP = 1 / 120;
 
 /** A push on the screen (x right, y up) as a push along the ground, for a camera turned to `yaw`. */
-export function toGround({ x, y }, yaw) {
-  const { right, up } = groundAxes(yaw);
-  return [x * right[0] + y * up[0], x * right[1] + y * up[1]];
-}
+export { toGround } from 'madness-engine/view';
 
 export function createRace(GFX, index, { ball = createBall({ r: RADIUS }) } = {}) {
   const course = loadRace(index);

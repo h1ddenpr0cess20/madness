@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import { FALL_LIMIT } from '../src/physics.js';
+import { FALL_LIMIT } from 'madness-engine/physics';
 import { loadRace, RACES } from '../src/levels.js';
 import { ALTERNATES, drive, ROUTES } from './helpers/autopilot.js';
 

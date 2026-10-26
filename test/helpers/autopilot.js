@@ -6,7 +6,8 @@
  * to that.
  */
 
-import * as GFX from '../../src/vendor/gfx/index.js';
+import * as GFX from 'madness-engine/gfx';
+
 import { hammerAt, liftAt } from '../../src/actors.js';
 import { createRace, putBack, STEP, stepRace } from '../../src/race.js';
 

@@ -1,8 +1,8 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import * as GFX from '../src/vendor/gfx/index.js';
-import { createMarble, createSparkGeometry, RADIUS, sparkRays } from '../src/marble.js';
+import * as GFX from 'madness-engine/gfx';
+import { createMarble, createSparkGeometry, RADIUS, sparkRays } from 'madness-engine/heroes/marble';
 
 test('the spark: the same strands every time, out every way', () => {
   const rays = sparkRays();

@@ -1,4 +1,5 @@
-import { createBall, collideBalls, placeBall, PUSH, rollSpin, stepBall, turn } from './physics.js';
+import { createBall, collideBalls, placeBall, PUSH, rollSpin, stepBall, turn } from 'madness-engine/physics';
+
 import { tileTexture } from './scenery.js';
 
 /**
