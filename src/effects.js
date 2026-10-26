@@ -1,30 +1,16 @@
-import { createSparkGeometry, RADIUS, SPARK } from './marble.js';
+import { createEffects as createEngineEffects, outward, shardGeometry } from 'madness-engine/effects';
+import { createSparkGeometry, RADIUS, SPARK } from 'madness-engine/heroes/marble';
 
 /**
- * Bits that fly: the glass and the spark when the marble breaks, bubbles when
- * the acid gets it, confetti at the goal. Each bit is ballistic, bounces off
- * the course once or twice, and shrinks away.
+ * Bits that fly, on the engine's (`madness-engine/effects`): the glass and
+ * the spark when the marble breaks, bubbles when the acid gets it, confetti
+ * at the goal. Each bit is ballistic, bounces off the course once or twice,
+ * and shrinks away.
  */
 
-const GRAVITY = 18;
-
-function shardGeometry(GFX) {
-  // A thin, irregular sliver: four points, four faces.
-  const p = [[0, 0.09, 0], [-0.07, -0.04, 0.02], [0.08, -0.05, -0.01], [0.01, -0.02, 0.05]];
-  const faces = [[0, 1, 2], [0, 3, 1], [0, 2, 3], [1, 3, 2]];
-  const position = new Float32Array(faces.flatMap((f) => f.flatMap((i) => p[i])));
-  const g = new GFX.BufferGeometry();
-  g.setAttribute('position', new GFX.BufferAttribute(position, 3));
-  g.computeVertexNormals();
-  return g;
-}
-
 export function createEffects(GFX, scene) {
-  const group = new GFX.Group();
-  group.name = 'effects';
-  scene.add(group);
-  let course = null;
-  const bits = [];
+  const effects = createEngineEffects(GFX, scene);
+  const { spawn } = effects;
 
   const glass = new GFX.MeshPhysicalMaterial({
     name: 'shard', color: new GFX.Color('#ffffff'), roughness: 0.05, transmission: 1, thickness: 0.05, ior: 1.5,
@@ -40,28 +26,10 @@ export function createEffects(GFX, scene) {
   const paper = new GFX.PlaneGeometry(0.16, 0.1);
   const confettiColours = ['#d97757', '#f4f1ea', '#e8b04a', '#6a9bcc', '#bcd1a0'].map((c) => new GFX.MeshBasicMaterial({ color: new GFX.Color(c), side: GFX.DoubleSide }));
 
-  function spawn(mesh, { x, y, z, vx, vy, vz, life, spin = 6, drag = 0, floaty = 1, bounce = 0.35 }) {
-    mesh.position.set(x, y, z);
-    mesh.rotation.set(Math.random() * 6, Math.random() * 6, Math.random() * 6);
-    group.add(mesh);
-    bits.push({
-      mesh, vx, vy, vz, life, age: 0, drag, floaty, bounce,
-      spin: [(Math.random() - 0.5) * spin, (Math.random() - 0.5) * spin, (Math.random() - 0.5) * spin],
-      scale: mesh.scale.x,
-    });
-  }
-
-  const outward = (speed, up) => {
-    const a = Math.random() * Math.PI * 2;
-    const s = speed * (0.4 + Math.random() * 0.6);
-    return [Math.cos(a) * s, up * (0.5 + Math.random()), Math.sin(a) * s];
-  };
-
   return {
     setCourse(c) {
-      course = c;
-      for (const b of bits) group.remove(b.mesh);
-      bits.length = 0;
+      effects.setGround(c);
+      effects.clear();
     },
 
     /** The marble in pieces: glass everywhere, and the spark's rays scattered with it. */
@@ -96,39 +64,6 @@ export function createEffects(GFX, scene) {
       }
     },
 
-    update(dt) {
-      for (let i = bits.length - 1; i >= 0; i--) {
-        const b = bits[i];
-        b.age += dt;
-        if (b.age >= b.life) {
-          group.remove(b.mesh);
-          bits.splice(i, 1);
-          continue;
-        }
-        const m = b.mesh;
-        b.vy -= GRAVITY * b.floaty * dt;
-        const k = Math.max(0, 1 - b.drag * dt);
-        b.vx *= k; b.vy *= b.drag ? Math.max(0, 1 - b.drag * 0.5 * dt) : 1; b.vz *= k;
-        m.position.x += b.vx * dt;
-        m.position.y += b.vy * dt;
-        m.position.z += b.vz * dt;
-        const ground = course?.heightAt(m.position.x, m.position.z);
-        if (ground != null && b.bounce > 0 && m.position.y < ground + 0.03 && m.position.y > ground - 0.4 && b.vy < 0) {
-          m.position.y = ground + 0.03;
-          b.vy *= -b.bounce;
-          b.vx *= 0.55; b.vz *= 0.55;
-          b.spin = b.spin.map((s) => s * 0.5);
-        } else if (ground != null && b.bounce === 0 && m.position.y < ground + 0.02 && m.position.y > ground - 0.4) {
-          m.position.y = ground + 0.02;
-          b.vx = b.vy = b.vz = 0;
-          b.spin = [0, 0, 0];
-        }
-        m.rotation.x += b.spin[0] * dt;
-        m.rotation.y += b.spin[1] * dt;
-        m.rotation.z += b.spin[2] * dt;
-        const fade = Math.min(1, (b.life - b.age) / 0.4);
-        m.scale.setScalar(b.scale * fade);
-      }
-    },
+    update: effects.update,
   };
 }

@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
 import { toGround } from '../src/race.js';
-import { createView, groundAxes, HOME, LIMITS } from '../src/view.js';
+import { createView, groundAxes, HOME, LIMITS } from 'madness-engine/views/arcade';
 
 const near = (a, b, e = 1e-9) => a.every((v, i) => Math.abs(v - b[i]) < e);
 

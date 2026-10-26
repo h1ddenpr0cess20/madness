@@ -1,7 +1,8 @@
+import { createMarble } from 'madness-engine/heroes/marble';
+import { rollSpin, turn } from 'madness-engine/physics';
+
 import { createEffects } from './effects.js';
 import { RACES } from './levels.js';
-import { createMarble } from './marble.js';
-import { rollSpin, turn } from './physics.js';
 import { createRace, putBack, STEP, stepRace, toGround } from './race.js';
 import { createCourseMeshes, createGoalGate } from './scenery.js';
 

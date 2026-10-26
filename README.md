@@ -74,22 +74,19 @@ What's out there:
 
 | | |
 |---|---|
-| `src/vendor/gfx/` | Alan's renderer, copied unchanged from `alan/src/client/vendor/gfx`: WebGPU where the browser has it, WebGL 2 where it doesn't (`?renderer=webgl` pins it), physically based shading, transmission and shadows. |
-| `src/marble.js` | Alan's glass (`createEye`), scaled down to a marble, with the 3D spark inside it. |
+| `madness-engine` | The [Madness Engine](https://github.com/h1ddenpr0cess20/madness-engine), pinned to a commit in `package.json`: the renderer (WebGPU where the browser has it, WebGL 2 where it doesn't, `?renderer=webgl` pins it), the ball physics, the controls, the arcade view, and the glass marble (`heroes/marble`: Alan's glass with the 3D spark inside it), the haze and the studio the glass reflects. |
+| `src/stage.js`, `src/audio.js`, `src/effects.js`, `src/storage.js` | The engine's stage, sound, flying bits and saved slot, with the game's own on top: its lens, its knocks, shattering, fizz and tune, its shards, bubbles and confetti. |
 | `src/course.js` | A course is a grid of tiles, each with four corner heights. That one structure gives flat ground, ramps, banks, half-pipes, bowls and bumps, with walls wherever neighbouring tiles differ. It builds both the mesh and the collision triangles. |
 | `src/levels.js` | The eleven races, written with `flat`, `slope`, `chute`, `bend`, `bowl`, `surface` and the hazards. |
-| `src/physics.js` | Sphere physics written for this game: gravity, the push from the controls, then contact resolution against the triangles and the moving boxes, nearest contact first so seams between tiles don't nudge the marble. |
 | `src/race.js` | One race with nothing drawn: the rules for losing the marble, reaching the goal and where it goes back to. The game draws it; the tests drive it. |
-| `src/view.js` | Where the camera sits round the marble — turned, tilted and zoomed within limits, eased toward wherever the player aims it — and which way on the ground is up and right on the screen. |
-| `src/audio.js` | Every sound, synthesised with Web Audio. |
 
 | Script | |
 |---|---|
 | `npm run dev` | Vite dev server |
 | `npm run build` | Bundles to `dist/` |
 | `npm run preview` | `build`, then serves `dist/` |
-| `npm test` | `node:test`: the physics, the course builder, the hazards, the marble, and an autopilot that has to finish every race well inside its time without losing the marble |
+| `npm test` | `node:test`: the engine's physics, view and marble as the game uses them, the course builder, the hazards, and an autopilot that has to finish every race well inside its time without losing the marble |
 | `npm run lint` | ESLint |
 
-The renderer is three.js-shaped but isn't three.js; see
-`src/vendor/gfx/LICENSE` for what it ports from it.
+The renderer is three.js-shaped but isn't three.js; see the engine's
+`src/gfx/LICENSE` for what it ports from it.
