@@ -21,6 +21,6 @@
     "vite": "^8.3.1"
   },
   "dependencies": {
-    "madness-engine": "github:h1ddenpr0cess20/madness-engine#f18154b8912048654f15e405422c6f2c33775cc8"
+    "madness-engine": "github:h1ddenpr0cess20/madness-engine#fc6746e3dc1a4296949c52d531207a2f359f60cc"
   }
 }
