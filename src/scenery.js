@@ -6,10 +6,10 @@
 const textures = new Map();
 
 /**
- * A tile's face, `w` by `d` tiles of it: a colour map and a height map for
+ * A tile's face, `w` by `d` tiles of it: a color map and a height map for
  * the bump. Each tile is a slab with softly bevelled edges, set in a narrow
- * dark joint. The colour map is near white because the colour comes from the
- * tile underneath — the course's own colours, chequered — and it only
+ * dark joint. The color map is near white because the color comes from the
+ * tile underneath — the course's own colors, checkred — and it only
  * multiplies it.
  */
 export function tileTexture(GFX, w = 1, d = 1) {
@@ -92,7 +92,7 @@ export function createCourseMeshes(GFX, built) {
 
 /**
  * The finish gate: two posts and a crossbar with GOAL on it, standing across
- * the side of the chequered goal the course comes in from.
+ * the side of the checkred goal the course comes in from.
  */
 export function createGoalGate(GFX, course) {
   let x0 = Infinity, x1 = -Infinity, z0 = Infinity, z1 = -Infinity, y = -Infinity;
@@ -152,7 +152,7 @@ export function createGoalGate(GFX, course) {
   return gate;
 }
 
-/** The sign on the gate: GOAL between chequered ends, sized to the bar. */
+/** The sign on the gate: GOAL between checkred ends, sized to the bar. */
 function goalSign(GFX, width) {
   if (typeof document === 'undefined') return null;
   const h = 128, w = Math.round(h * width / 0.55);

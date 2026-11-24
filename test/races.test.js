@@ -7,7 +7,7 @@ import { ALTERNATES, drive, ROUTES } from './helpers/autopilot.js';
 
 /**
  * Which tiles can be rolled to from the start without a lift: across to a
- * neighbour level with this one, or down onto one lower by less than a
+ * neighbor level with this one, or down onto one lower by less than a
  * breaking fall. Lifts join the tiles at either end of their run.
  */
 function reachable(course) {

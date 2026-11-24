@@ -64,13 +64,13 @@ test('safe ground is level ground with level ground all round it', () => {
   assert.ok(!c.isSafe(0, 0), 'over nothing');
 });
 
-test('colours are linear', () => {
+test('colors are linear', () => {
   assert.deepEqual(linearRGB('#ffffff'), [1, 1, 1]);
   assert.deepEqual(linearRGB('#000000'), [0, 0, 0]);
   assert.ok(Math.abs(linearRGB('#808080')[0] - 0.2158605) < 1e-6);
 });
 
-test('chutes, bends and bowls meet their neighbours level across the middle', () => {
+test('chutes, bends and bowls meet their neighbors level across the middle', () => {
   const c = new Course({ name: 't', cols: 20, rows: 20, time: 0, palette });
   c.chute(2, 2, 6, 3, 10, 8, 'x');
   c.bend(8, 2, 3, 8, [8, 5]);

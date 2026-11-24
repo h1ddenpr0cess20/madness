@@ -95,7 +95,7 @@ export class Course {
     return this;
   }
 
-  /** The chequered finish. */
+  /** The checkred finish. */
   goal(x, z, w, d, h) {
     return this.flat(x, z, w, d, h, { kind: 'goal' });
   }
@@ -105,7 +105,7 @@ export class Course {
     return this;
   }
 
-  /** An acid slime creeping round a loop of tile centres. */
+  /** An acid slime creeping round a loop of tile centers. */
   slime(points, { speed = 1.6 } = {}) {
     this.slimes.push({ points: points.map(([x, z]) => [x + 0.5, z + 0.5]), speed });
     return this;
@@ -176,7 +176,7 @@ function banked(u, bank) {
   return bank * Math.min(k * k, 1.8);
 }
 
-/** sRGB hex to linear RGB — vertex colours are linear. The engine's. */
+/** sRGB hex to linear RGB — vertex colors are linear. The engine's. */
 export { linearRGB };
 
 /**
@@ -190,14 +190,14 @@ export function buildCourse(course) {
   const tops = { position: [], normal: [], color: [], uv: [] };
   const walls = { position: [], normal: [], color: [] };
   const palette = course.palette;
-  const tileColours = palette.tiles.map(linearRGB);
-  const goalColours = [linearRGB('#f4f1ea'), linearRGB('#1c1b1a')];
-  const wallColours = (palette.walls ?? palette.tiles).map(linearRGB);
+  const tileColors = palette.tiles.map(linearRGB);
+  const goalColors = [linearRGB('#f4f1ea'), linearRGB('#1c1b1a')];
+  const wallColors = (palette.walls ?? palette.tiles).map(linearRGB);
 
-  const face = (out, a, b, c, normal, colours, uvs) => {
+  const face = (out, a, b, c, normal, colors, uvs) => {
     out.position.push(...a, ...b, ...c);
     for (let k = 0; k < 3; k++) out.normal.push(...normal);
-    out.color.push(...colours[0], ...colours[1], ...colours[2]);
+    out.color.push(...colors[0], ...colors[1], ...colors[2]);
     if (uvs) out.uv.push(...uvs[0], ...uvs[1], ...uvs[2]);
     world.addTriangle(...a, ...b, ...c);
   };
@@ -223,7 +223,7 @@ export function buildCourse(course) {
       if (!c) continue;
       const [h00, h10, h01, h11] = c.h;
       const checker = (x + z) % 2;
-      const base = c.kind === 'goal' ? goalColours[checker] : tileColours[c.color % tileColours.length];
+      const base = c.kind === 'goal' ? goalColors[checker] : tileColors[c.color % tileColors.length];
       const tint = c.kind === 'goal' ? 1 : checker ? 0.88 : 1;
       const col = base.map((v) => v * tint);
       const A = [x, h00, z], B = [x + 1, h10, z], C = [x, h01, z + 1], D = [x + 1, h11, z + 1];
@@ -231,10 +231,10 @@ export function buildCourse(course) {
       face(tops, B, C, D, normalOf(B, C, D), [col, col, col], [[1, 1], [0, 0], [1, 0]]);
 
       // The sides: down to the next tile, or into the dark.
-      const wallBase = wallColours[c.color % wallColours.length];
+      const wallBase = wallColors[c.color % wallColors.length];
       const low = Math.min(...c.h) - DEPTH;
       const edges = [
-        // [ends, this tile's heights there, neighbour, its heights there, outward]
+        // [ends, this tile's heights there, neighbor, its heights there, outward]
         [[x, z], [x + 1, z], h00, h10, course.cell(x, z - 1), (n) => [n.h[H01], n.h[H11]], [0, 0, -1]],
         [[x, z + 1], [x + 1, z + 1], h01, h11, course.cell(x, z + 1), (n) => [n.h[H00], n.h[H10]], [0, 0, 1]],
         [[x, z], [x, z + 1], h00, h01, course.cell(x - 1, z), (n) => [n.h[H10], n.h[H11]], [-1, 0, 0]],
