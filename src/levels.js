@@ -2,7 +2,7 @@ import { Course } from './course.js';
 
 /**
  * The races, in order. Each is a course that starts at the back, high up,
- * and works its way down toward the camera to a chequered goal — except the
+ * and works its way down toward the camera to a checkred goal — except the
  * Silly Race, which runs the other way, uphill. Crossroads and Odyssey split
  * in places into a short, risky way and a long, safe one that meet again
  * further down. The time each one gives is added to whatever is left over

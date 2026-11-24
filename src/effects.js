@@ -24,7 +24,7 @@ export function createEffects(GFX, scene) {
   const bubble = new GFX.SphereGeometry(0.07, 12, 8);
   const acid = new GFX.MeshStandardMaterial({ name: 'bubble', color: new GFX.Color('#8dff52'), emissive: new GFX.Color('#2fa000'), emissiveIntensity: 0.8, roughness: 0.2 });
   const paper = new GFX.PlaneGeometry(0.16, 0.1);
-  const confettiColours = ['#d97757', '#f4f1ea', '#e8b04a', '#6a9bcc', '#bcd1a0'].map((c) => new GFX.MeshBasicMaterial({ color: new GFX.Color(c), side: GFX.DoubleSide }));
+  const confettiColors = ['#d97757', '#f4f1ea', '#e8b04a', '#6a9bcc', '#bcd1a0'].map((c) => new GFX.MeshBasicMaterial({ color: new GFX.Color(c), side: GFX.DoubleSide }));
 
   return {
     setCourse(c) {
@@ -58,7 +58,7 @@ export function createEffects(GFX, scene) {
 
     confetti(x, y, z) {
       for (let i = 0; i < 80; i++) {
-        const m = new GFX.Mesh(paper, confettiColours[i % confettiColours.length]);
+        const m = new GFX.Mesh(paper, confettiColors[i % confettiColors.length]);
         const [ox, oy, oz] = outward(3, 7);
         spawn(m, { x, y, z, vx: ox, vy: oy, vz: oz, life: 2.6 + Math.random(), spin: 14, drag: 1.6, floaty: 0.35, bounce: 0 });
       }

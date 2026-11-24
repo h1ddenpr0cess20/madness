@@ -76,7 +76,7 @@ What's out there:
 |---|---|
 | `madness-engine` | The [Madness Engine](https://github.com/h1ddenpr0cess20/madness-engine), pinned to a commit in `package.json`: the renderer (WebGPU where the browser has it, WebGL 2 where it doesn't, `?renderer=webgl` pins it), the ball physics, the controls, the arcade view, and the glass marble (`heroes/marble`: Alan's glass with the 3D spark inside it), the haze and the studio the glass reflects. |
 | `src/stage.js`, `src/audio.js`, `src/effects.js`, `src/storage.js` | The engine's stage, sound, flying bits and saved slot, with the game's own on top: its lens, its knocks, shattering, fizz and tune, its shards, bubbles and confetti. |
-| `src/course.js` | A course is a grid of tiles, each with four corner heights. That one structure gives flat ground, ramps, banks, half-pipes, bowls and bumps, with walls wherever neighbouring tiles differ. It builds both the mesh and the collision triangles. |
+| `src/course.js` | A course is a grid of tiles, each with four corner heights. That one structure gives flat ground, ramps, banks, half-pipes, bowls and bumps, with walls wherever neighboring tiles differ. It builds both the mesh and the collision triangles. |
 | `src/levels.js` | The eleven races, written with `flat`, `slope`, `chute`, `bend`, `bowl`, `surface` and the hazards. |
 | `src/race.js` | One race with nothing drawn: the rules for losing the marble, reaching the goal and where it goes back to. The game draws it; the tests drive it. |
 
